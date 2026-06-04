@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>AI Account Pool Manager</title>
+<link rel="icon" type="image/png" id="favicon" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -636,7 +637,7 @@
   <div class="hdr">
     <div class="hdr-left">
       <div class="hdr-brand">
-        <div class="hdr-icon"><i class="ti ti-cards" aria-hidden="true"></i></div>
+        <div class="hdr-icon" style="background:none;box-shadow:none;padding:0;overflow:hidden;width:52px;height:52px;flex-shrink:0"><img src="logo/logo-removebg-preview.png" alt="Logo" style="width:130%;height:130%;object-fit:cover;object-position:center;margin:-15%;display:block" /></div>
         <div>
           <div class="hdr-title">AI Account Pool</div>
           <span class="hdr-sub">Quản lý tài khoản AI</span>
@@ -1113,9 +1114,25 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// Generate cropped favicon from center of logo
+(function() {
+  const img = new Image();
+  img.onload = function() {
+    const size = 64;
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const scale = Math.max(size / img.width, size / img.height) * 1.4;
+    const w = img.width * scale, h = img.height * scale;
+    const x = (size - w) / 2, y = (size - h) / 2;
+    ctx.drawImage(img, x, y, w, h);
+    document.getElementById('favicon').href = canvas.toDataURL('image/png');
+  };
+  img.src = 'logo/logo-removebg-preview.png';
+})();
+
 render();
 setInterval(() => {
-  let changed = false;
   accounts.forEach(a => {
     if (a.status === 'cooling' && a.resetAt && Date.now() >= a.resetAt) changed = true;
     if (a.status === 'cooling' && a.resetAt && Date.now() < a.resetAt) {
