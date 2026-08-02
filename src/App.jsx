@@ -51,7 +51,47 @@ function App() {
   // Accounts state
   const [accounts, setAccounts] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem('aip_v3') || '[]');
+      const stored = JSON.parse(localStorage.getItem('aip_v3') || '[]');
+      const seedEmails = [
+        'buixu4ns0n@gmail.com',
+        'xu4ns0n@gmail.com',
+        'onis.syrux@gmail.com',
+        'xs287.work@gmail.com',
+        'sonkevjn@gmail.com',
+        'lmaihuong34@gmail.com',
+        'xs0n287.titktok@gmail.com',
+        'xs0nchatbot@gmail.com',
+        'xxuyen0608@gmail.com',
+        'Meohuongw65@',
+        'jian46677@gmail.com',
+        'sonbx@gmail.com'
+      ];
+      const seedAccounts = seedEmails.map((email, idx) => ({
+        id: `kiro-seed-${idx}`,
+        platform: 'Kiro',
+        email: email.trim(),
+        note: '',
+        logo: '',
+        status: 'ready',
+        resetAt: null,
+        createdAt: Date.now() + idx
+      }));
+
+      if (stored.length === 0) {
+        return seedAccounts;
+      } else {
+        const merged = [...stored];
+        seedAccounts.forEach(seed => {
+          const exists = stored.some(
+            a => a.platform?.toLowerCase() === seed.platform.toLowerCase() && 
+                 a.email?.toLowerCase() === seed.email.toLowerCase()
+          );
+          if (!exists) {
+            merged.push(seed);
+          }
+        });
+        return merged;
+      }
     } catch (e) {
       return [];
     }
