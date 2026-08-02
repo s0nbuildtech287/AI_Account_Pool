@@ -148,6 +148,26 @@ const fmtTime = (ts) => {
 };
 
 function App() {
+  // ── Auth gate ──
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => sessionStorage.getItem('aip_auth') === '1'
+  );
+  const [loginUser, setLoginUser] = useState('');
+  const [loginPass, setLoginPass] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loginShowPass, setLoginShowPass] = useState(false);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (loginUser.trim() === 'xu4ns0n' && loginPass === 'Sondeptrai123@k') {
+      sessionStorage.setItem('aip_auth', '1');
+      setIsAuthenticated(true);
+      setLoginError('');
+    } else {
+      setLoginError('Tên đăng nhập hoặc mật khẩu không đúng.');
+    }
+  };
+
   // Accounts state
   const [accounts, setAccounts] = useState(() => {
     try {
@@ -864,6 +884,76 @@ function App() {
   const autoLogoSrc = fLogo || (fPlatform ? guessLogo(fPlatform) : '');
 
   return (
+    <>
+    {!isAuthenticated ? (
+      <div className="login-page">
+        <div className="login-bg" aria-hidden="true">
+          <div className="login-orb login-orb-1" />
+          <div className="login-orb login-orb-2" />
+          <div className="login-orb login-orb-3" />
+        </div>
+        <div className="login-card">
+          <div className="login-logo">
+            <img src="/logo/logo-removebg-preview.png" alt="Logo" />
+          </div>
+          <div className="login-heading">AI Account Pool</div>
+          <div className="login-sub">Đăng nhập để tiếp tục</div>
+
+          <form className="login-form" onSubmit={handleLogin} autoComplete="off">
+            <div className="login-field">
+              <label htmlFor="login-user">Tên đăng nhập</label>
+              <div className="login-input-wrap">
+                <i className="ti ti-user" aria-hidden="true" />
+                <input
+                  id="login-user"
+                  type="text"
+                  placeholder="Tên đăng nhập"
+                  value={loginUser}
+                  onChange={(e) => setLoginUser(e.target.value)}
+                  autoFocus
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+            <div className="login-field">
+              <label htmlFor="login-pass">Mật khẩu</label>
+              <div className="login-input-wrap">
+                <i className="ti ti-lock" aria-hidden="true" />
+                <input
+                  id="login-pass"
+                  type={loginShowPass ? 'text' : 'password'}
+                  placeholder="Mật khẩu"
+                  value={loginPass}
+                  onChange={(e) => setLoginPass(e.target.value)}
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="login-eye"
+                  onClick={() => setLoginShowPass((v) => !v)}
+                  aria-label="Hiện/ẩn mật khẩu"
+                  tabIndex={-1}
+                >
+                  <i className={`ti ${loginShowPass ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+
+            {loginError && (
+              <div className="login-error">
+                <i className="ti ti-alert-circle" aria-hidden="true" />
+                {loginError}
+              </div>
+            )}
+
+            <button type="submit" className="login-submit">
+              <i className="ti ti-login" aria-hidden="true" />
+              Đăng nhập
+            </button>
+          </form>
+        </div>
+      </div>
+    ) : (
     <div className="app" id="app">
       {/* Header */}
       <div className="hdr">
@@ -1637,6 +1727,8 @@ function App() {
         </div>
       )}
     </div>
+    )}
+    </>
   );
 }
 
