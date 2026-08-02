@@ -150,7 +150,7 @@ const fmtTime = (ts) => {
 function App() {
   // ── Auth gate ──
   const [isAuthenticated, setIsAuthenticated] = useState(
-    () => sessionStorage.getItem('aip_auth') === '1'
+    () => localStorage.getItem('aip_auth') === '1' || sessionStorage.getItem('aip_auth') === '1'
   );
   const [loginUser, setLoginUser] = useState('');
   const [loginPass, setLoginPass] = useState('');
@@ -160,12 +160,18 @@ function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     if (loginUser.trim() === 'xu4ns0n' && loginPass === 'Sondeptrai123@k') {
-      sessionStorage.setItem('aip_auth', '1');
+      localStorage.setItem('aip_auth', '1');
       setIsAuthenticated(true);
       setLoginError('');
     } else {
       setLoginError('Tên đăng nhập hoặc mật khẩu không đúng.');
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('aip_auth');
+    sessionStorage.removeItem('aip_auth');
+    setIsAuthenticated(false);
   };
 
   // Accounts state
@@ -1016,6 +1022,14 @@ function App() {
               id="theme-icon"
               aria-hidden="true"
             ></i>
+          </button>
+          <button
+            className="theme-btn"
+            onClick={handleLogout}
+            title="Đăng xuất"
+            aria-label="Đăng xuất"
+          >
+            <i className="ti ti-logout" aria-hidden="true"></i>
           </button>
         </div>
       </div>
