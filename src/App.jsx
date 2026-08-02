@@ -11,7 +11,7 @@ const KNOWN_LOGOS = {
   gemini: 'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg',
   perplexity: 'https://www.perplexity.ai/favicon.ico',
   chatgpt: 'https://chat.openai.com/favicon.ico',
-  claude: 'https://claude.ai/favicon.ico',
+  claude: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/claude.svg',
   grok: 'https://x.ai/favicon.ico',
   copilot: 'https://copilot.microsoft.com/favicon.ico',
   kiro: 'https://kiro.dev/favicon.ico',
