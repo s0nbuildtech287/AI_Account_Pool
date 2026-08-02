@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import initialAccounts from './accounts.json';
 
 const KNOWN_LOGOS = {
   antigravity: 'https://downloads.rankmyai.com/uploads/logos/antigravity-google-logo.png',
@@ -178,94 +179,24 @@ function App() {
   const [accounts, setAccounts] = useState(() => {
     try {
       const stored = JSON.parse(localStorage.getItem('aip_v3') || '[]');
-      const seedEmails = [
-        'buixu4ns0n@gmail.com',
-        'xu4ns0n@gmail.com',
-        'onis.syrux@gmail.com',
-        'xs287.work@gmail.com',
-        'sonkevjn@gmail.com',
-        'lmaihuong34@gmail.com',
-        'xs0n287.titktok@gmail.com',
-        'xs0nchatbot@gmail.com',
-        'xxuyen0608@gmail.com',
-        'Meohuongw65@',
-        'jian46677@gmail.com',
-        'sonbx@gmail.com'
-      ];
-      const kiroSeeds = seedEmails.map((email, idx) => ({
-        id: `kiro-seed-${idx}`,
-        platform: 'Kiro',
-        email: email.trim(),
-        note: '',
-        logo: '',
-        status: 'ready',
-        resetAt: null,
-        createdAt: Date.now() + idx
-      }));
-
-      const codexSeeds = seedEmails.map((email, idx) => ({
-        id: `codex-seed-${idx}`,
-        platform: 'Codex',
-        email: email.trim(),
-        note: '',
-        logo: '',
-        status: 'ready',
-        resetAt: null,
-        createdAt: Date.now() + idx + 200
-      }));
-
-      const cursorSeeds = seedEmails.map((email, idx) => ({
-        id: `cursor-seed-${idx}`,
-        platform: 'Cursor',
-        email: email.trim(),
-        note: '',
-        logo: '',
-        status: 'ready',
-        resetAt: null,
-        createdAt: Date.now() + idx + 300
-      }));
-
-      const antigravityProEmails = [
-        'buixu4ns0n@gmail.com',
-        'lmaihuong34@gmail.com',
-        'xs287.work@gmail.com',
-        'jian46677@gmail.com'
-      ];
-      const antigravitySeeds = seedEmails.map((email, idx) => ({
-        id: `antigravity-seed-${idx}`,
-        platform: 'Antigravity',
-        email: email.trim(),
-        note: antigravityProEmails.includes(email.trim()) ? 'Pro' : '',
-        logo: '',
-        status: 'ready',
-        resetAt: null,
-        createdAt: Date.now() + idx + 100
-      }));
-
-      const seedAccounts = [...kiroSeeds, ...antigravitySeeds, ...codexSeeds, ...cursorSeeds];
-
       if (stored.length === 0) {
-        return seedAccounts;
+        return initialAccounts;
       } else {
         const merged = [...stored];
-        seedAccounts.forEach(seed => {
+        initialAccounts.forEach((seed) => {
           const exists = stored.some(
-            a => a.platform?.toLowerCase() === seed.platform.toLowerCase() && 
-                 a.email?.toLowerCase() === seed.email.toLowerCase()
+            (a) =>
+              a.platform?.toLowerCase() === seed.platform.toLowerCase() &&
+              a.email?.toLowerCase() === seed.email.toLowerCase()
           );
           if (!exists) {
             merged.push(seed);
           }
         });
-        merged.forEach(a => {
-          if (a.platform?.toLowerCase() === 'antigravity' && antigravityProEmails.includes(a.email?.trim())) {
-            if (!a.note) a.note = 'Pro';
-          }
-        });
         return merged;
       }
     } catch (e) {
-      return [];
+      return initialAccounts;
     }
   });
 
@@ -328,9 +259,16 @@ function App() {
   const [modalNewsOpen, setModalNewsOpen] = useState(false);
   const [newsBadge, setNewsBadge] = useState(0);
 
-  // Persist accounts
+  // Persist accounts & auto-sync to local accounts.json file
   useEffect(() => {
     localStorage.setItem('aip_v3', JSON.stringify(accounts));
+    if (import.meta.env.DEV) {
+      fetch('/api/save-accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(accounts),
+      }).catch(() => {});
+    }
   }, [accounts]);
 
   // Persist logs

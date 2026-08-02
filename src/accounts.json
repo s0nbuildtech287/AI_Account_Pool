@@ -1,0 +1,482 @@
+[
+  {
+    "id": "kiro-seed-0",
+    "platform": "Kiro",
+    "email": "buixu4ns0n@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909139
+  },
+  {
+    "id": "kiro-seed-1",
+    "platform": "Kiro",
+    "email": "xu4ns0n@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909140
+  },
+  {
+    "id": "kiro-seed-2",
+    "platform": "Kiro",
+    "email": "onis.syrux@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909141
+  },
+  {
+    "id": "kiro-seed-3",
+    "platform": "Kiro",
+    "email": "xs287.work@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909142
+  },
+  {
+    "id": "kiro-seed-4",
+    "platform": "Kiro",
+    "email": "sonkevjn@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909143
+  },
+  {
+    "id": "kiro-seed-5",
+    "platform": "Kiro",
+    "email": "lmaihuong34@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909144
+  },
+  {
+    "id": "kiro-seed-6",
+    "platform": "Kiro",
+    "email": "xs0n287.titktok@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909145
+  },
+  {
+    "id": "kiro-seed-7",
+    "platform": "Kiro",
+    "email": "xs0nchatbot@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909146
+  },
+  {
+    "id": "kiro-seed-8",
+    "platform": "Kiro",
+    "email": "xxuyen0608@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909147
+  },
+  {
+    "id": "kiro-seed-9",
+    "platform": "Kiro",
+    "email": "Meohuongw65@",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909148
+  },
+  {
+    "id": "kiro-seed-10",
+    "platform": "Kiro",
+    "email": "jian46677@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909149
+  },
+  {
+    "id": "kiro-seed-11",
+    "platform": "Kiro",
+    "email": "sonbx@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785678909150
+  },
+  {
+    "id": "antigravity-seed-0",
+    "platform": "Antigravity",
+    "email": "buixu4ns0n@gmail.com",
+    "note": "Pro",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679155260
+  },
+  {
+    "id": "antigravity-seed-1",
+    "platform": "Antigravity",
+    "email": "lmaihuong34@gmail.com",
+    "note": "Pro",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679155261
+  },
+  {
+    "id": "antigravity-seed-2",
+    "platform": "Antigravity",
+    "email": "xs287.work@gmail.com",
+    "note": "Pro",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679155262
+  },
+  {
+    "id": "antigravity-seed-3",
+    "platform": "Antigravity",
+    "email": "jian46677@gmail.com",
+    "note": "Pro",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679155263
+  },
+  {
+    "id": "codex-seed-0",
+    "platform": "Codex",
+    "email": "buixu4ns0n@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188050
+  },
+  {
+    "id": "codex-seed-1",
+    "platform": "Codex",
+    "email": "xu4ns0n@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188051
+  },
+  {
+    "id": "codex-seed-2",
+    "platform": "Codex",
+    "email": "onis.syrux@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188052
+  },
+  {
+    "id": "codex-seed-3",
+    "platform": "Codex",
+    "email": "xs287.work@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188053
+  },
+  {
+    "id": "codex-seed-4",
+    "platform": "Codex",
+    "email": "sonkevjn@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188054
+  },
+  {
+    "id": "codex-seed-5",
+    "platform": "Codex",
+    "email": "lmaihuong34@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188055
+  },
+  {
+    "id": "codex-seed-6",
+    "platform": "Codex",
+    "email": "xs0n287.titktok@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188056
+  },
+  {
+    "id": "codex-seed-7",
+    "platform": "Codex",
+    "email": "xs0nchatbot@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188057
+  },
+  {
+    "id": "codex-seed-8",
+    "platform": "Codex",
+    "email": "xxuyen0608@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188058
+  },
+  {
+    "id": "codex-seed-9",
+    "platform": "Codex",
+    "email": "Meohuongw65@",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188059
+  },
+  {
+    "id": "codex-seed-10",
+    "platform": "Codex",
+    "email": "jian46677@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188060
+  },
+  {
+    "id": "codex-seed-11",
+    "platform": "Codex",
+    "email": "sonbx@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188061
+  },
+  {
+    "id": "cursor-seed-0",
+    "platform": "Cursor",
+    "email": "buixu4ns0n@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188150
+  },
+  {
+    "id": "cursor-seed-1",
+    "platform": "Cursor",
+    "email": "xu4ns0n@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188151
+  },
+  {
+    "id": "cursor-seed-2",
+    "platform": "Cursor",
+    "email": "onis.syrux@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188152
+  },
+  {
+    "id": "cursor-seed-3",
+    "platform": "Cursor",
+    "email": "xs287.work@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188153
+  },
+  {
+    "id": "cursor-seed-4",
+    "platform": "Cursor",
+    "email": "sonkevjn@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188154
+  },
+  {
+    "id": "cursor-seed-5",
+    "platform": "Cursor",
+    "email": "lmaihuong34@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188155
+  },
+  {
+    "id": "cursor-seed-6",
+    "platform": "Cursor",
+    "email": "xs0n287.titktok@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188156
+  },
+  {
+    "id": "cursor-seed-7",
+    "platform": "Cursor",
+    "email": "xs0nchatbot@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188157
+  },
+  {
+    "id": "cursor-seed-8",
+    "platform": "Cursor",
+    "email": "xxuyen0608@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188158
+  },
+  {
+    "id": "cursor-seed-9",
+    "platform": "Cursor",
+    "email": "Meohuongw65@",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188159
+  },
+  {
+    "id": "cursor-seed-10",
+    "platform": "Cursor",
+    "email": "jian46677@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188160
+  },
+  {
+    "id": "cursor-seed-11",
+    "platform": "Cursor",
+    "email": "sonbx@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785679188161
+  },
+  {
+    "id": "antigravity-seed-1",
+    "platform": "Antigravity",
+    "email": "xu4ns0n@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681254692
+  },
+  {
+    "id": "antigravity-seed-2",
+    "platform": "Antigravity",
+    "email": "onis.syrux@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681254693
+  },
+  {
+    "id": "antigravity-seed-4",
+    "platform": "Antigravity",
+    "email": "sonkevjn@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681254695
+  },
+  {
+    "id": "antigravity-seed-6",
+    "platform": "Antigravity",
+    "email": "xs0n287.titktok@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681254697
+  },
+  {
+    "id": "antigravity-seed-7",
+    "platform": "Antigravity",
+    "email": "xs0nchatbot@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681254698
+  },
+  {
+    "id": "antigravity-seed-8",
+    "platform": "Antigravity",
+    "email": "xxuyen0608@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681254699
+  },
+  {
+    "id": "antigravity-seed-9",
+    "platform": "Antigravity",
+    "email": "Meohuongw65@",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681254700
+  },
+  {
+    "id": "antigravity-seed-11",
+    "platform": "Antigravity",
+    "email": "sonbx@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681254702
+  }
+]
