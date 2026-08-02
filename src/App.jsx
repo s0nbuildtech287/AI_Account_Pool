@@ -225,17 +225,17 @@ function App() {
         createdAt: Date.now() + idx + 300
       }));
 
-      const antigravityEmails = [
+      const antigravityProEmails = [
         'buixu4ns0n@gmail.com',
         'lmaihuong34@gmail.com',
         'xs287.work@gmail.com',
         'jian46677@gmail.com'
       ];
-      const antigravitySeeds = antigravityEmails.map((email, idx) => ({
+      const antigravitySeeds = seedEmails.map((email, idx) => ({
         id: `antigravity-seed-${idx}`,
         platform: 'Antigravity',
         email: email.trim(),
-        note: '',
+        note: antigravityProEmails.includes(email.trim()) ? 'Pro' : '',
         logo: '',
         status: 'ready',
         resetAt: null,
@@ -255,6 +255,11 @@ function App() {
           );
           if (!exists) {
             merged.push(seed);
+          }
+        });
+        merged.forEach(a => {
+          if (a.platform?.toLowerCase() === 'antigravity' && antigravityProEmails.includes(a.email?.trim())) {
+            if (!a.note) a.note = 'Pro';
           }
         });
         return merged;
@@ -869,7 +874,13 @@ function App() {
         </div>
         <div className="card-info">
           <div className="card-email">{acc.email || '—'}</div>
-          <div className="card-note">{acc.note || ''}</div>
+          <div className="card-note">
+            {acc.note ? (
+              <span className={`card-note-badge${acc.note.toLowerCase().includes('pro') ? ' note-pro' : ''}`}>
+                <i className="ti ti-bookmark" aria-hidden="true"></i> {acc.note}
+              </span>
+            ) : null}
+          </div>
         </div>
         {timerHtml}
         <div className="card-actions">
