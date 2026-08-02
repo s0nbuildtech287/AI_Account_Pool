@@ -18,6 +18,100 @@ const KNOWN_LOGOS = {
   kiro: 'https://kiro.dev/favicon.ico',
 };
 
+// Platform Status Monitor — Atlassian Statuspage API endpoints
+const PLATFORM_STATUS_APIS = [
+  {
+    key: 'chatgpt',
+    label: 'ChatGPT',
+    logo: KNOWN_LOGOS.chatgpt,
+    url: 'https://status.openai.com/api/v2/summary.json',
+    homepage: 'https://status.openai.com',
+  },
+  {
+    key: 'claude',
+    label: 'Claude',
+    logo: KNOWN_LOGOS.claude,
+    url: 'https://status.claude.com/api/v2/summary.json',
+    homepage: 'https://status.claude.com',
+  },
+  {
+    key: 'cursor',
+    label: 'Cursor',
+    logo: KNOWN_LOGOS.cursor,
+    url: 'https://status.cursor.com/api/v2/summary.json',
+    homepage: 'https://status.cursor.com',
+  },
+  {
+    key: 'copilot',
+    label: 'Copilot',
+    logo: KNOWN_LOGOS.copilot,
+    url: 'https://www.githubstatus.com/api/v2/summary.json',
+    homepage: 'https://www.githubstatus.com',
+  },
+];
+
+// Indicator value → UI metadata
+const STATUS_META = {
+  none:     { color: 'var(--green)',  icon: 'ti-circle-check',  label: 'Hoạt động bình thường' },
+  minor:    { color: 'var(--amber)',  icon: 'ti-alert-circle',   label: 'Có sự cố nhỏ' },
+  major:    { color: '#f97316',      icon: 'ti-alert-triangle', label: 'Sự cố lớn' },
+  critical: { color: 'var(--red)',   icon: 'ti-flame',          label: 'Ngừng hoạt động' },
+  unknown:  { color: 'var(--text-tertiary)', icon: 'ti-help-circle', label: 'Không xác định' },
+};
+
+// ── News Feed config ──
+const NEWS_FEEDS = [
+  {
+    key: 'openai',
+    label: 'OpenAI',
+    logo: KNOWN_LOGOS.chatgpt,
+    color: '#10a37f',
+    rss: 'https://openai.com/news/rss.xml',
+  },
+  {
+    key: 'anthropic',
+    label: 'Anthropic',
+    logo: KNOWN_LOGOS.claude,
+    color: '#d97706',
+    rss: 'https://rsshub.app/anthropic/news',
+  },
+  {
+    key: 'cursor',
+    label: 'Cursor',
+    logo: KNOWN_LOGOS.cursor,
+    color: '#6366f1',
+    rss: 'https://changelog.cursor.com/rss',
+  },
+  {
+    key: 'copilot',
+    label: 'Copilot',
+    logo: KNOWN_LOGOS.copilot,
+    color: '#0969da',
+    rss: 'https://github.blog/ai-and-ml/github-copilot/feed/',
+  },
+];
+
+const RSS2JSON = 'https://api.rss2json.com/v1/api.json?count=10&rss_url=';
+
+const fmtNewsDate = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return '';
+  const diff = Date.now() - d.getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins} phút trước`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} giờ trước`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days} ngày trước`;
+  return d.toLocaleDateString('vi-VN');
+};
+
+const isNewToday = (dateStr) => {
+  if (!dateStr) return false;
+  return Date.now() - new Date(dateStr).getTime() < 24 * 3600000;
+};
+
 const guessLogo = (platform) => {
   if (!platform) return '';
   const key = platform.toLowerCase().trim();
@@ -192,6 +286,17 @@ function App() {
   const [ioMsg, setIoMsg] = useState('');
   const [ioTitle, setIoTitle] = useState('Export JSON');
 
+  // Platform Status state
+  const [platformStatus, setPlatformStatus] = useState({});
+  const [statusLastUpdated, setStatusLastUpdated] = useState(null);
+
+  // News Feed state
+  const [newsItems, setNewsItems] = useState([]);
+  const [newsFetching, setNewsFetching] = useState(false);
+  const [newsFilter, setNewsFilter] = useState('all');
+  const [modalNewsOpen, setModalNewsOpen] = useState(false);
+  const [newsBadge, setNewsBadge] = useState(0);
+
   // Persist accounts
   useEffect(() => {
     localStorage.setItem('aip_v3', JSON.stringify(accounts));
@@ -217,6 +322,7 @@ function App() {
         setModalAddOpen(false);
         setModalIoOpen(false);
         setModalAnalyticsOpen(false);
+        setModalNewsOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -246,11 +352,74 @@ function App() {
     img.src = '/logo/logo-removebg-preview.png';
   }, []);
 
+  // Fetch platform status — runs on mount and every 60s
+  useEffect(() => {
+    const fetchAllStatus = async () => {
+      const results = {};
+      await Promise.allSettled(
+        PLATFORM_STATUS_APIS.map(async (p) => {
+          try {
+            const res = await fetch(p.url, { signal: AbortSignal.timeout(8000) });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            results[p.key] = {
+              indicator: data.status?.indicator || 'unknown',
+              description: data.status?.description || '',
+            };
+          } catch {
+            results[p.key] = { indicator: 'unknown', description: '' };
+          }
+        })
+      );
+      setPlatformStatus(results);
+      setStatusLastUpdated(new Date());
+    };
+
+    fetchAllStatus();
+    const interval = setInterval(fetchAllStatus, 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
   const toggleTheme = () => {
     const next = theme === 'light' ? 'dark' : 'light';
     setTheme(next);
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('aip_theme', next);
+  };
+
+  const fetchNews = async () => {
+    setNewsFetching(true);
+    const all = [];
+    await Promise.allSettled(
+      NEWS_FEEDS.map(async (feed) => {
+        try {
+          const url = RSS2JSON + encodeURIComponent(feed.rss);
+          const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const data = await res.json();
+          if (data.status !== 'ok' || !Array.isArray(data.items)) return;
+          data.items.forEach((item) => {
+            // Strip HTML tags from description
+            const rawDesc = item.description || item.content || '';
+            const stripped = rawDesc.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+            all.push({
+              feedKey: feed.key,
+              title: item.title || '(Không có tiêu đề)',
+              link: item.link || item.guid || '#',
+              pubDate: item.pubDate || item.isoDate || '',
+              description: stripped.slice(0, 160) + (stripped.length > 160 ? '…' : ''),
+            });
+          });
+        } catch {
+          // silently skip failed feeds
+        }
+      })
+    );
+    // Sort newest first
+    all.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    setNewsItems(all);
+    setNewsBadge(all.filter((item) => isNewToday(item.pubDate)).length);
+    setNewsFetching(false);
   };
 
   const getAccountStatus = (acc, currentTime) => {
@@ -761,6 +930,56 @@ function App() {
         </div>
       </div>
 
+      {/* Platform Status Bar */}
+      <div className="status-bar" id="status-bar">
+        <div className="status-bar-items">
+          {PLATFORM_STATUS_APIS.map((p) => {
+            const st = platformStatus[p.key];
+            const indicator = st?.indicator || 'unknown';
+            const meta = STATUS_META[indicator] || STATUS_META.unknown;
+            const isProblem = indicator !== 'none' && indicator !== 'unknown';
+            return (
+              <a
+                key={p.key}
+                className={`status-item${isProblem ? ' status-item--problem' : ''}`}
+                href={p.homepage}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={st?.description || meta.label}
+              >
+                <img
+                  src={p.logo}
+                  alt={p.label}
+                  className="status-platform-logo"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <span
+                  className={`status-dot${isProblem ? ' status-dot--pulse' : ''}`}
+                  style={{ background: meta.color }}
+                />
+                <span className="status-label">{p.label}</span>
+                <span className="status-state" style={{ color: meta.color }}>
+                  <i className={`ti ${meta.icon}`} aria-hidden="true" />
+                </span>
+              </a>
+            );
+          })}
+        </div>
+        <div className="status-bar-meta">
+          {statusLastUpdated ? (
+            <>
+              <i className="ti ti-refresh" aria-hidden="true" />
+              {statusLastUpdated.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </>
+          ) : (
+            <>
+              <i className="ti ti-loader-2 status-loading" aria-hidden="true" />
+              Đang kiểm tra...
+            </>
+          )}
+        </div>
+      </div>
+
       {/* Platform filter */}
       <div className="platform-section">
         <div className="platform-filter" id="platform-filter">
@@ -869,6 +1088,19 @@ function App() {
         </div>
 
         <div className="toolbar-right">
+          <button
+            className="icon-btn"
+            onClick={() => {
+              setModalNewsOpen(true);
+              if (newsItems.length === 0) fetchNews();
+            }}
+            style={{ position: 'relative' }}
+          >
+            <i className="ti ti-news" aria-hidden="true"></i> <span>Tin tức</span>
+            {newsBadge > 0 && (
+              <span className="news-badge-dot">{newsBadge > 9 ? '9+' : newsBadge}</span>
+            )}
+          </button>
           <button className="icon-btn" onClick={() => setModalAnalyticsOpen(true)}>
             <i className="ti ti-chart-bar" aria-hidden="true"></i> <span>Thống kê</span>
           </button>
@@ -1298,6 +1530,108 @@ function App() {
               >
                 Đóng
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* News Feed Modal */}
+      {modalNewsOpen && (
+        <div className="overlay" id="modal-news" onClick={() => setModalNewsOpen(false)}>
+          <div className="modal modal--news" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-hdr">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="ti ti-news" style={{ fontSize: '18px', color: 'var(--accent)' }}></i>
+                <span>Tin tức AI Platforms</span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  className="act-btn"
+                  onClick={fetchNews}
+                  disabled={newsFetching}
+                  title="Tải lại tin tức"
+                >
+                  <i className={`ti ti-refresh${newsFetching ? ' news-spin' : ''}`}></i>
+                </button>
+                <button className="modal-close" onClick={() => setModalNewsOpen(false)}>×</button>
+              </div>
+            </div>
+
+            {/* Platform Filter */}
+            <div className="news-platform-filter">
+              <button
+                className={`news-pf-btn${newsFilter === 'all' ? ' active' : ''}`}
+                onClick={() => setNewsFilter('all')}
+              >
+                Tất cả
+              </button>
+              {NEWS_FEEDS.map((f) => (
+                <button
+                  key={f.key}
+                  className={`news-pf-btn${newsFilter === f.key ? ' active' : ''}`}
+                  style={newsFilter === f.key ? { borderColor: f.color, color: f.color, background: f.color + '18' } : {}}
+                  onClick={() => setNewsFilter(f.key)}
+                >
+                  <img src={f.logo} alt="" style={{ width: '12px', height: '12px', borderRadius: '2px', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                  {f.label}
+                </button>
+              ))}
+            </div>
+
+            {/* News List */}
+            <div className="news-list">
+              {newsFetching && newsItems.length === 0 ? (
+                <div className="news-loading">
+                  <i className="ti ti-loader-2 news-spin"></i>
+                  <span>Đang tải tin tức...</span>
+                </div>
+              ) : newsItems.length === 0 ? (
+                <div className="news-loading">
+                  <i className="ti ti-wifi-off"></i>
+                  <span>Không tải được tin tức. Kiểm tra kết nối mạng.</span>
+                </div>
+              ) : (
+                newsItems
+                  .filter((item) => newsFilter === 'all' || item.feedKey === newsFilter)
+                  .map((item, i) => {
+                    const feed = NEWS_FEEDS.find((f) => f.key === item.feedKey);
+                    return (
+                      <a
+                        key={i}
+                        className="news-item"
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <div className="news-item-left">
+                          <img
+                            src={feed?.logo || ''}
+                            alt={feed?.label || ''}
+                            className="news-feed-logo"
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                        </div>
+                        <div className="news-item-body">
+                          <div className="news-item-top">
+                            <span className="news-platform-badge" style={{ background: (feed?.color || '#888') + '20', color: feed?.color || '#888', borderColor: (feed?.color || '#888') + '40' }}>
+                              {feed?.label}
+                            </span>
+                            {isNewToday(item.pubDate) && (
+                              <span className="news-new-badge">MỚI</span>
+                            )}
+                            <span className="news-date">{fmtNewsDate(item.pubDate)}</span>
+                          </div>
+                          <div className="news-title">{item.title}</div>
+                          {item.description && (
+                            <div className="news-desc">{item.description}</div>
+                          )}
+                          <div className="news-read-more">
+                            Đọc bài gốc <i className="ti ti-external-link"></i>
+                          </div>
+                        </div>
+                      </a>
+                    );
+                  })
+              )}
             </div>
           </div>
         </div>
