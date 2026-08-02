@@ -48,6 +48,11 @@ const fmtCD = (ms) => {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sc).padStart(2, '0')}`;
 };
 
+const fmtTime = (ts) => {
+  const d = new Date(ts);
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+};
+
 function App() {
   // Accounts state
   const [accounts, setAccounts] = useState(() => {
@@ -139,9 +144,19 @@ function App() {
     }
   });
 
+  // Logs state
+  const [logs, setLogs] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('aip_logs') || '[]');
+    } catch (e) {
+      return [];
+    }
+  });
+
   // UI state
   const [filter, setFilter] = useState('all');
   const [platformFilter, setPlatformFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('flat');
   const [now, setNow] = useState(Date.now());
   const [theme, setTheme] = useState(() => {
@@ -149,10 +164,17 @@ function App() {
     document.documentElement.setAttribute('data-theme', saved);
     return saved;
   });
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page on filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, platformFilter, searchQuery]);
 
   // Modal state
   const [modalAddOpen, setModalAddOpen] = useState(false);
   const [modalIoOpen, setModalIoOpen] = useState(false);
+  const [modalAnalyticsOpen, setModalAnalyticsOpen] = useState(false);
   const [editId, setEditId] = useState(null);
 
   // Form state
@@ -175,6 +197,11 @@ function App() {
     localStorage.setItem('aip_v3', JSON.stringify(accounts));
   }, [accounts]);
 
+  // Persist logs
+  useEffect(() => {
+    localStorage.setItem('aip_logs', JSON.stringify(logs));
+  }, [logs]);
+
   // Tick for countdowns
   useEffect(() => {
     const timer = setInterval(() => {
@@ -189,6 +216,7 @@ function App() {
       if (e.key === 'Escape') {
         setModalAddOpen(false);
         setModalIoOpen(false);
+        setModalAnalyticsOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -249,6 +277,16 @@ function App() {
         a.id === id ? { ...a, status: 'cooling', resetAt: Date.now() + ms } : a
       )
     );
+
+    // Save usage log
+    const newLog = {
+      id: uid(),
+      platform: acc.platform,
+      email: acc.email,
+      timestamp: Date.now(),
+      cooldown: dur
+    };
+    setLogs((prev) => [newLog, ...prev]);
   };
 
   const markCooling = (id) => {
@@ -300,7 +338,6 @@ function App() {
     setFEmail(acc.email || '');
     setFNote(acc.note || '');
     setFStatus(acc.status || 'ready');
-    // For duration, if cooling, check resetAt
     if (acc.status === 'cooling' && acc.resetAt) {
       const diff = acc.resetAt - Date.now();
       const hours = Math.ceil(diff / 3600000);
@@ -475,13 +512,28 @@ function App() {
     const status = getAccountStatus(a, now);
     const stOk = filter === 'all' || status === filter;
     const pfOk = platformFilter === 'all' || a.platform === platformFilter;
-    return stOk && pfOk;
+    const searchOk = !searchQuery.trim() ||
+      (a.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (a.platform || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (a.note || '').toLowerCase().includes(searchQuery.toLowerCase());
+    return stOk && pfOk && searchOk;
   });
+
+  // Pagination math
+  const pageSize = 15;
+  const totalItems = filteredAccounts.length;
+  const totalPages = Math.ceil(totalItems / pageSize) || 1;
+
+  // Paginated array
+  const paginatedAccounts = filteredAccounts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   // Group accounts if viewMode is 'group'
   const groupedAccounts = {};
   if (viewMode === 'group') {
-    filteredAccounts.forEach((a) => {
+    paginatedAccounts.forEach((a) => {
       const k = a.platform || '(Không rõ)';
       if (!groupedAccounts[k]) groupedAccounts[k] = [];
       groupedAccounts[k].push(a);
@@ -784,6 +836,17 @@ function App() {
           </button>
         </div>
 
+        {/* Search Bar */}
+        <div className="search-wrap">
+          <i className="ti ti-search search-icon" aria-hidden="true"></i>
+          <input
+            className="search-input"
+            placeholder="Tìm email, platform, ghi chú..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
         <div className="divider"></div>
 
         <div className="view-toggle">
@@ -806,6 +869,9 @@ function App() {
         </div>
 
         <div className="toolbar-right">
+          <button className="icon-btn" onClick={() => setModalAnalyticsOpen(true)}>
+            <i className="ti ti-chart-bar" aria-hidden="true"></i> <span>Thống kê</span>
+          </button>
           <button className="icon-btn" onClick={openImport}>
             <i className="ti ti-upload" aria-hidden="true"></i>{' '}
             <span>Import</span>
@@ -830,48 +896,75 @@ function App() {
               <div>Thêm account mới hoặc thay đổi bộ lọc</div>
             </div>
           </div>
-        ) : viewMode === 'flat' ? (
-          <div className="grid">
-            {filteredAccounts.map((acc) => renderCard(acc))}
-          </div>
         ) : (
-          groupKeys.map((k) => {
-            const sample = groupedAccounts[k][0];
-            const logo = logoFor(sample);
-            const initials = (k || '?').slice(0, 2).toUpperCase();
-            const logoEl = logo ? (
-              <img
-                src={logo}
-                alt=""
-                style={{
-                  width: '16px',
-                  height: '16px',
-                  borderRadius: '4px',
-                  objectFit: 'contain',
-                }}
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
-            ) : (
-              <div className="group-avatar">{initials}</div>
-            );
-
-            return (
-              <div key={k}>
-                <div className="group-hdr">
-                  {logoEl}
-                  {k}
-                  <span className="group-count">
-                    {groupedAccounts[k].length}
-                  </span>
-                </div>
-                <div className="grid">
-                  {groupedAccounts[k].map((acc) => renderCard(acc))}
-                </div>
+          <>
+            {viewMode === 'flat' ? (
+              <div className="grid">
+                {paginatedAccounts.map((acc) => renderCard(acc))}
               </div>
-            );
-          })
+            ) : (
+              groupKeys.map((k) => {
+                const sample = groupedAccounts[k][0];
+                const logo = logoFor(sample);
+                const initials = (k || '?').slice(0, 2).toUpperCase();
+                const logoEl = logo ? (
+                  <img
+                    src={logo}
+                    alt=""
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      borderRadius: '4px',
+                      objectFit: 'contain',
+                    }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="group-avatar">{initials}</div>
+                );
+
+                return (
+                  <div key={k}>
+                    <div className="group-hdr">
+                      {logoEl}
+                      {k}
+                      <span className="group-count">
+                        {groupedAccounts[k].length}
+                      </span>
+                    </div>
+                    <div className="grid">
+                      {groupedAccounts[k].map((acc) => renderCard(acc))}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  className="page-btn"
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  <i className="ti ti-chevron-left" aria-hidden="true"></i> Trước
+                </button>
+                <span className="page-info">
+                  Trang {currentPage} / {totalPages}
+                </span>
+                <button
+                  className="page-btn"
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  Sau <i className="ti ti-chevron-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -1098,6 +1191,113 @@ function App() {
                   </button>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Analytics Modal */}
+      {modalAnalyticsOpen && (
+        <div
+          className="overlay"
+          id="modal-analytics"
+          onClick={() => setModalAnalyticsOpen(false)}
+        >
+          <div className="modal" style={{ width: '460px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-icon">
+                <i className="ti ti-chart-bar" aria-hidden="true"></i>
+              </div>
+              <h3>Thống kê & Nhật ký sử dụng</h3>
+            </div>
+
+            <div className="analytics-grid">
+              <div className="analytics-card">
+                <div className="analytics-title">Tổng số lần dùng</div>
+                <div className="stat-large">{logs.length} <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text-secondary)' }}>lần</span></div>
+              </div>
+              <div className="analytics-card">
+                <div className="analytics-title">Top Platform</div>
+                <div className="stat-list">
+                  {Object.entries(
+                    logs.reduce((acc, log) => {
+                      acc[log.platform] = (acc[log.platform] || 0) + 1;
+                      return acc;
+                    }, {})
+                  )
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3)
+                    .map(([platform, count]) => (
+                      <div className="stat-item" key={platform}>
+                        <span>{platform}</span>
+                        <span>{count} lần</span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="field">
+              <label>Nhật ký gần đây</label>
+              {logs.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--text-tertiary)' }}>
+                  Chưa có nhật ký sử dụng nào.
+                </div>
+              ) : (
+                <div className="log-list">
+                  {logs.slice(0, 50).map((log) => {
+                    const logo = KNOWN_LOGOS[log.platform?.toLowerCase()] || guessLogo(log.platform);
+                    const initials = (log.platform || '?').slice(0, 2).toUpperCase();
+                    return (
+                      <div className="log-item" key={log.id}>
+                        {logo ? (
+                          <img
+                            src={logo}
+                            alt=""
+                            style={{ width: '18px', height: '18px', borderRadius: '4px', objectFit: 'contain' }}
+                            onError={(e) => {
+                              e.target.outerHTML = `<div class="group-avatar" style="width:18px;height:18px;font-size:8px">${initials}</div>`;
+                            }}
+                          />
+                        ) : (
+                          <div className="group-avatar" style={{ width: '18px', height: '18px', fontSize: '8px' }}>
+                            {initials}
+                          </div>
+                        )}
+                        <div className="log-details">
+                          <div className="log-email">{log.email || '—'}</div>
+                          <div className="log-meta">
+                            {log.platform} <span style={{ color: 'var(--text-tertiary)' }}>•</span> Cooldown: {log.cooldown}
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div className="log-time">{fmtTime(log.timestamp)}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button
+                className="act-btn danger"
+                onClick={() => {
+                  if (confirm('Xoá toàn bộ nhật ký sử dụng?')) {
+                    setLogs([]);
+                  }
+                }}
+                disabled={logs.length === 0}
+              >
+                <i className="ti ti-trash"></i> Xoá nhật ký
+              </button>
+              <button
+                className="act-btn primary"
+                onClick={() => setModalAnalyticsOpen(false)}
+              >
+                Đóng
+              </button>
             </div>
           </div>
         </div>
