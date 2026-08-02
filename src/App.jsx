@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 
 const KNOWN_LOGOS = {
+  antigravity: 'https://downloads.rankmyai.com/uploads/logos/antigravity-google-logo.png',
   cursor: 'https://www.cursor.com/favicon.ico',
-  codex: 'https://cdn.openai.com/API/logo-small.png',
+  codex: 'https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-avatar/avatars/codex.webp',
   windsurf: 'https://windsurf.com/favicon.ico',
   'v0': 'https://v0.dev/favicon.ico',
   lovable: 'https://lovable.dev/favicon.ico',
@@ -66,7 +67,7 @@ function App() {
         'jian46677@gmail.com',
         'sonbx@gmail.com'
       ];
-      const seedAccounts = seedEmails.map((email, idx) => ({
+      const kiroSeeds = seedEmails.map((email, idx) => ({
         id: `kiro-seed-${idx}`,
         platform: 'Kiro',
         email: email.trim(),
@@ -76,6 +77,47 @@ function App() {
         resetAt: null,
         createdAt: Date.now() + idx
       }));
+
+      const codexSeeds = seedEmails.map((email, idx) => ({
+        id: `codex-seed-${idx}`,
+        platform: 'Codex',
+        email: email.trim(),
+        note: '',
+        logo: '',
+        status: 'ready',
+        resetAt: null,
+        createdAt: Date.now() + idx + 200
+      }));
+
+      const cursorSeeds = seedEmails.map((email, idx) => ({
+        id: `cursor-seed-${idx}`,
+        platform: 'Cursor',
+        email: email.trim(),
+        note: '',
+        logo: '',
+        status: 'ready',
+        resetAt: null,
+        createdAt: Date.now() + idx + 300
+      }));
+
+      const antigravityEmails = [
+        'buixu4ns0n@gmail.com',
+        'lmaihuong34@gmail.com',
+        'xs287.work@gmail.com',
+        'jian46677@gmail.com'
+      ];
+      const antigravitySeeds = antigravityEmails.map((email, idx) => ({
+        id: `antigravity-seed-${idx}`,
+        platform: 'Antigravity',
+        email: email.trim(),
+        note: '',
+        logo: '',
+        status: 'ready',
+        resetAt: null,
+        createdAt: Date.now() + idx + 100
+      }));
+
+      const seedAccounts = [...kiroSeeds, ...antigravitySeeds, ...codexSeeds, ...cursorSeeds];
 
       if (stored.length === 0) {
         return seedAccounts;
@@ -864,6 +906,7 @@ function App() {
                 onChange={(e) => setFPlatform(e.target.value)}
               />
               <datalist id="platforms-list">
+                <option value="Antigravity" />
                 <option value="Cursor" />
                 <option value="Codex" />
                 <option value="Windsurf" />
