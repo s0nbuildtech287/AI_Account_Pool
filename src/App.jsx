@@ -175,12 +175,12 @@ function App() {
     setIsAuthenticated(false);
   };
 
-  // Accounts state
+  // Accounts state — localStorage is source of truth.
+  // On fresh deploy, localStorage is empty so initialAccounts is used as the starting point.
+  // No auto-merge of seed: bạn tự import lại sau mỗi lần deploy.
   const [accounts, setAccounts] = useState(() => {
     try {
       const stored = JSON.parse(localStorage.getItem('aip_v3') || '[]');
-      // Only use seed data on first load (empty localStorage).
-      // Never re-merge seed — doing so causes deleted/edited accounts to reappear.
       return stored.length > 0 ? stored : initialAccounts;
     } catch (e) {
       return initialAccounts;
@@ -246,7 +246,7 @@ function App() {
   const [modalNewsOpen, setModalNewsOpen] = useState(false);
   const [newsBadge, setNewsBadge] = useState(0);
 
-  // Persist accounts & auto-sync to local accounts.json file
+  // Persist accounts to localStorage
   useEffect(() => {
     localStorage.setItem('aip_v3', JSON.stringify(accounts));
     if (import.meta.env.DEV) {
@@ -586,14 +586,23 @@ function App() {
     if (mode === 'replace') {
       if (!confirm(`Thay thế toàn bộ ${accounts.length} account hiện tại?`))
         return;
+      // Clear localStorage immediately so stale data can't bleed back in
+      localStorage.setItem('aip_v3', JSON.stringify(cleanParsed));
       setAccounts(cleanParsed);
     } else {
-      const ex = new Set(accounts.map((a) => a.id));
+      // Dedup by platform+email (case-insensitive), not just id
+      const exKeys = new Set(
+        accounts.map((a) =>
+          `${(a.platform || '').toLowerCase().trim()}|${(a.email || '').toLowerCase().trim()}`
+        )
+      );
       let added = 0;
       const merged = [...accounts];
       cleanParsed.forEach((a) => {
-        if (!ex.has(a.id)) {
+        const key = `${(a.platform || '').toLowerCase().trim()}|${(a.email || '').toLowerCase().trim()}`;
+        if (!exKeys.has(key)) {
           merged.push(a);
+          exKeys.add(key);
           added++;
         }
       });
@@ -603,14 +612,15 @@ function App() {
     setModalIoOpen(false);
   };
 
-  // Get distinct platforms for filter
+  // Get distinct platforms for filter (case-insensitive dedup)
   const getPlatforms = () => {
     const seen = new Set();
     const list = [];
     accounts.forEach((a) => {
       const p = a.platform || '';
-      if (p && !seen.has(p)) {
-        seen.add(p);
+      const key = p.toLowerCase().trim();
+      if (key && !seen.has(key)) {
+        seen.add(key);
         list.push(a);
       }
     });
@@ -636,7 +646,9 @@ function App() {
   const filteredAccounts = accounts.filter((a) => {
     const status = getAccountStatus(a, now);
     const stOk = filter === 'all' || status === filter;
-    const pfOk = platformFilter === 'all' || a.platform === platformFilter;
+    const pfOk =
+      platformFilter === 'all' ||
+      (a.platform || '').toLowerCase().trim() === platformFilter.toLowerCase().trim();
     const searchOk = !searchQuery.trim() ||
       (a.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (a.platform || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -1037,7 +1049,7 @@ function App() {
           {distinctPlatforms.map((a) => {
             const logo = logoFor(a);
             const cnt = accounts.filter(
-              (x) => x.platform === a.platform
+              (x) => (x.platform || '').toLowerCase().trim() === (a.platform || '').toLowerCase().trim()
             ).length;
             const active = platformFilter === a.platform;
             const initials = (a.platform || '?').slice(0, 2).toUpperCase();

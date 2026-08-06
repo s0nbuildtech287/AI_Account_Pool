@@ -478,5 +478,45 @@
     "status": "ready",
     "resetAt": null,
     "createdAt": 1785681254702
+  },
+  {
+    "id": "kiro-seed-12",
+    "platform": "Kiro",
+    "email": "buison28724@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681300000
+  },
+  {
+    "id": "antigravity-seed-12",
+    "platform": "Antigravity",
+    "email": "buison28724@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681300001
+  },
+  {
+    "id": "codex-seed-12",
+    "platform": "Codex",
+    "email": "buison28724@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681300002
+  },
+  {
+    "id": "cursor-seed-12",
+    "platform": "Cursor",
+    "email": "buison28724@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681300003
   }
 ]
