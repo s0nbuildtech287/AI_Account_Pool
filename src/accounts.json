@@ -92,7 +92,7 @@
   {
     "id": "kiro-seed-9",
     "platform": "Kiro",
-    "email": "Meohuongw65@",
+    "email": "meohuongw65@gmail.com",
     "note": "",
     "logo": "",
     "status": "ready",
@@ -252,7 +252,7 @@
   {
     "id": "codex-seed-9",
     "platform": "Codex",
-    "email": "Meohuongw65@",
+    "email": "meohuongw65@gmail.com",
     "note": "",
     "logo": "",
     "status": "ready",
@@ -372,7 +372,7 @@
   {
     "id": "cursor-seed-9",
     "platform": "Cursor",
-    "email": "Meohuongw65@",
+    "email": "meohuongw65@gmail.com",
     "note": "",
     "logo": "",
     "status": "ready",
@@ -462,7 +462,7 @@
   {
     "id": "antigravity-seed-10",
     "platform": "Antigravity",
-    "email": "Meohuongw65@",
+    "email": "meohuongw65@gmail.com",
     "note": "",
     "logo": "",
     "status": "ready",
@@ -518,5 +518,45 @@
     "status": "ready",
     "resetAt": null,
     "createdAt": 1785681300003
+  },
+  {
+    "id": "kiro-seed-13",
+    "platform": "Kiro",
+    "email": "s0nkiro287@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681400000
+  },
+  {
+    "id": "antigravity-seed-13",
+    "platform": "Antigravity",
+    "email": "s0nkiro287@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681400001
+  },
+  {
+    "id": "codex-seed-13",
+    "platform": "Codex",
+    "email": "s0nkiro287@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681400002
+  },
+  {
+    "id": "cursor-seed-13",
+    "platform": "Cursor",
+    "email": "s0nkiro287@gmail.com",
+    "note": "",
+    "logo": "",
+    "status": "ready",
+    "resetAt": null,
+    "createdAt": 1785681400003
   }
 ]
