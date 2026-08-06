@@ -179,22 +179,9 @@ function App() {
   const [accounts, setAccounts] = useState(() => {
     try {
       const stored = JSON.parse(localStorage.getItem('aip_v3') || '[]');
-      if (stored.length === 0) {
-        return initialAccounts;
-      } else {
-        const merged = [...stored];
-        initialAccounts.forEach((seed) => {
-          const exists = stored.some(
-            (a) =>
-              a.platform?.toLowerCase() === seed.platform.toLowerCase() &&
-              a.email?.toLowerCase() === seed.email.toLowerCase()
-          );
-          if (!exists) {
-            merged.push(seed);
-          }
-        });
-        return merged;
-      }
+      // Only use seed data on first load (empty localStorage).
+      // Never re-merge seed — doing so causes deleted/edited accounts to reappear.
+      return stored.length > 0 ? stored : initialAccounts;
     } catch (e) {
       return initialAccounts;
     }
