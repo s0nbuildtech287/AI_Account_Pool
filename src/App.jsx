@@ -586,9 +586,14 @@ function App() {
     if (mode === 'replace') {
       if (!confirm(`Thay thế toàn bộ ${accounts.length} account hiện tại?`))
         return;
-      // Clear localStorage immediately so stale data can't bleed back in
-      localStorage.setItem('aip_v3', JSON.stringify(cleanParsed));
-      setAccounts(cleanParsed);
+      // Force all accounts to ready state on replace import
+      const freshAccounts = cleanParsed.map((a) => ({
+        ...a,
+        status: 'ready',
+        resetAt: null,
+      }));
+      localStorage.setItem('aip_v3', JSON.stringify(freshAccounts));
+      setAccounts(freshAccounts);
     } else {
       // Dedup by platform+email (case-insensitive), not just id
       const exKeys = new Set(
